@@ -161,3 +161,35 @@ pair<vc<int>, vc<int>> random_binary_tree(int N, bool can_1) {
   }
   return {lch, rch};
 }
+
+// N>=3. biconnected.
+vc<pair<int, int>> random_outerplanar(int N) {
+  assert(N >= 3);
+  vc<pair<int, int>> E;
+  int M = RNG(0, (N - 3) + 1);
+  FOR(M) {
+    int a = RNG(0, N);
+    int b = RNG(0, N);
+    if (a == b) continue;
+    if (a > b) swap(a, b);
+    if (b == a + 1 || b == a + (N - 1)) continue;
+    bool ok = 1;
+    for (auto& [c, d] : E) {
+      if (a == c && b == d) ok = 0;
+      if (a == c || a == d || b == c || b == d) continue;
+      if (a < c && c < b && b < d) ok = 0;
+      if (c < a && a < d && d < b) ok = 0;
+    }
+    if (ok) E.eb(a, b);
+  }
+  vc<int> label(N);
+  FOR(i, N) label[i] = i;
+  shuffle(label);
+  FOR(i, N) E.eb(i, (i + 1) % N);
+  for (auto& [a, b] : E) {
+    a = label[a], b = label[b];
+    if (RNG(0, 2)) swap(a, b);
+  }
+  shuffle(E);
+  return E;
+}

@@ -118,7 +118,9 @@ struct Lazy_SegTree {
         while (l < size) {
           push(l);
           l = (2 * l);
-          if (check(MX::op(sm, dat[l]))) { sm = MX::op(sm, dat[l++]); }
+          if (check(MX::op(sm, dat[l]))) {
+            sm = MX::op(sm, dat[l++]);
+          }
         }
         return l - size;
       }
@@ -142,7 +144,9 @@ struct Lazy_SegTree {
         while (r < size) {
           push(r);
           r = (2 * r + 1);
-          if (check(MX::op(dat[r], sm))) { sm = MX::op(dat[r--], sm); }
+          if (check(MX::op(dat[r], sm))) {
+            sm = MX::op(dat[r--], sm);
+          }
         }
         return r + 1 - size;
       }
@@ -151,7 +155,30 @@ struct Lazy_SegTree {
     return 0;
   }
 
-private:
+  // l <= i xor (xor_val) < r となる i 全体に apply
+  void apply_xor_range(int l, int r, int xor_val, A a) {
+    assert(!(n & (n - 1)));
+    assert(0 <= xor_val && xor_val < n);
+    assert(0 <= l && l <= r && r <= n);
+
+    auto dfs = [&](auto& dfs, int idx, int seg_l, int seg_r) -> void {
+      if (l <= seg_l && seg_r <= r) {
+        return apply_at(idx, a);
+      }
+      if (r <= seg_l || seg_r <= l) return;
+      push(idx);
+      int seg_m = (seg_l + seg_r) / 2;
+      int bit = (seg_r - seg_l) / 2;
+      int left = 2 * idx + 0, right = 2 * idx + 1;
+      if (xor_val & bit) swap(left, right);
+      dfs(dfs, left, seg_l, seg_m);
+      dfs(dfs, right, seg_m, seg_r);
+      update(idx);
+    };
+    dfs(dfs, 1, 0, n);
+  }
+
+ private:
   void apply_at(int k, A a) {
     ll sz = 1 << (log - topbit(k));
     dat[k] = AM::act(dat[k], a, sz);

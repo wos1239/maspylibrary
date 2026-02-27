@@ -125,7 +125,7 @@ struct Intervals {
   X total_len;
   map<X, T> dat;
 
-  Intervals(T none_val) : none_val(none_val), total_num(0), total_len(0) {
+  Intervals(T none_val = 0) : none_val(none_val), total_num(0), total_len(0) {
     dat[LLIM] = none_val;
     dat[RLIM] = none_val;
   }

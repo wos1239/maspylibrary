@@ -3,7 +3,7 @@
 // chat gpt
 template <typename U, typename Arg1, typename Arg2>
 struct has_power_method {
-private:
+ private:
   // ヘルパー関数の実装
   template <typename V, typename A1, typename A2>
   static auto check(int)
@@ -13,7 +13,7 @@ private:
   template <typename, typename, typename>
   static auto check(...) -> std::false_type;
 
-public:
+ public:
   // メソッドの有無を表す型
   static constexpr bool value = decltype(check<U, Arg1, Arg2>(0))::value;
 };
@@ -25,6 +25,8 @@ typename Monoid::X monoid_pow(typename Monoid::X x, ll exp) {
     return Monoid::power(x, exp);
   } else {
     assert(exp >= 0);
+    if (exp == 0) return Monoid::unit();
+    if (exp == 1) return x;
     X res = Monoid::unit();
     while (exp) {
       if (exp & 1) res = Monoid::op(res, x);

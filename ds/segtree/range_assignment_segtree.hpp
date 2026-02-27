@@ -47,6 +47,7 @@ struct Range_Assignment_SegTree {
   X prod_all() { return seg.prod_all(); }
 
   void assign(int l, int r, X x) {
+    if (l == r) return;
     int a = cut.prev(l), b = cut.next(r);
     if (a < l) seg.set(a, monoid_pow<MX>(dat[a], l - a));
     if (r < b) {
