@@ -13,7 +13,10 @@ jobs:
       uses: actions/setup-python@v1
 
     - name: Install dependencies
-      run: pip3 install -U online-judge-verify-helper
+      run: |
+        pip3 install -U online-judge-verify-helper
+        # setuptools 82 で pkg_resources が消えるため、ここで戻す
+        pip3 install "setuptools<81"
 
     - name: Run tests
       env:
