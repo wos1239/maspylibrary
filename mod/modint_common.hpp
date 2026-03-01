@@ -11,45 +11,50 @@ template <class T>
 class has_mod : public decltype(has_mod_impl::check<T>(std::declval<T>())) {};
 
 template <typename mint>
-mint inv(int n) {
-  static const int mod = mint::get_mod();
-  static vector<mint> dat = {0, 1};
-  assert(0 <= n);
-  if (n >= mod) n %= mod;
-  while (len(dat) <= n) {
-    int k = len(dat);
-    int q = (mod + k - 1) / k;
-    dat.eb(dat[k * q - mod] * mint::raw(q));
-  }
-  return dat[n];
-}
-
-template <>
-double inv<double>(int n) {
-  assert(n != 0);
-  return 1.0 / n;
-}
-
-template <typename mint>
 mint fact(int n) {
   static const int mod = mint::get_mod();
   assert(0 <= n && n < mod);
   static vector<mint> dat = {1, 1};
-  while (len(dat) <= n) dat.eb(dat[len(dat) - 1] * mint(len(dat)));
+  if (len(dat) <= n) {
+    int now = len(dat);
+    int m = min(mod, 1 << (topbit(n) + 1));
+    dat.resize(m);
+    FOR(i, now, m) dat[i] = dat[i - 1] * mint::raw(i);
+  }
   return dat[n];
 }
 
 template <typename mint>
 mint fact_inv(int n) {
+  static const int mod = mint::get_mod();
   static vector<mint> dat = {1, 1};
   if (n < 0) return mint(0);
-  while (len(dat) <= n) dat.eb(dat[len(dat) - 1] * inv<mint>(len(dat)));
+  if (len(dat) <= n) {
+    int now = len(dat);
+    int m = min(mod, 1 << (topbit(n) + 1));
+    dat.resize(m);
+    dat[m - 1] = fact<mint>(m - 1).inverse();
+    FOR_R(i, now, m - 1) dat[i] = dat[i + 1] * mint::raw(i + 1);
+  }
   return dat[n];
 }
 
 template <class mint, class... Ts>
 mint fact_invs(Ts... xs) {
   return (mint(1) * ... * fact_inv<mint>(xs));
+}
+
+template <typename mint>
+mint inv(int n) {
+  static const int mod = mint::get_mod();
+  assert(1 <= n && n < mod);
+  return fact<mint>(n - 1) * fact_inv<mint>(n);
+}
+
+template <>
+double inv<double>(int n) {
+  assert(n != 0);
+  return 1.0 / n;
 }
 
 template <typename mint, class Head, class... Tail>
