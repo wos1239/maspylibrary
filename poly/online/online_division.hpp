@@ -10,8 +10,7 @@ struct Online_Division {
 
   mint query(int i, mint f_i, mint g_i) {
     assert(i == len(f));
-    f.eb(f_i);
-    g.eb(g_i);
+    f.eb(f_i), g.eb(g_i);
     if (i == 0) {
       assert(g_i == mint(1));
       F.eb(f_i);

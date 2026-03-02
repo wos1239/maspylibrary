@@ -14,7 +14,7 @@ vc<mint> fps_log_dense(const vc<mint>& f) {
   auto g = convolution(df, f_inv);
   g.resize(N - 1);
   g.insert(g.begin(), 0);
-  FOR(i, N) g[i] *= inv<mint>(i);
+  FOR(i, 1, N) g[i] *= inv<mint>(i);
   return g;
 }
 
@@ -27,7 +27,7 @@ vc<mint> fps_log_sparse(const vc<mint>& f) {
   vc<mint> g(N - 1);
   for (int n = 0; n < N - 1; ++n) {
     mint rhs = mint(n + 1) * f[n + 1];
-    for (auto&& [i, fi]: dat) {
+    for (auto&& [i, fi] : dat) {
       if (i > n) break;
       rhs -= fi * g[n - i];
     }
