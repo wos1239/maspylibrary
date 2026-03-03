@@ -31,7 +31,7 @@ void solve() {
 
   // Y[i] = g(1/i)
   vc<mint> X(LIM);
-  FOR(i, LIM) X[i] = inv<mint>(i);
+  FOR(i, 1, LIM) X[i] = inv<mint>(i);
   vc<mint> Y = multipoint_eval<mint>(g, X);
 
   // A の情報
