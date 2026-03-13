@@ -1,6 +1,8 @@
 
 // x -> (x+a)/b+c
-// 合成のいたるところで infty<ll>/2 以上にならないことを仮定. くらいで大丈夫だと思う.
+// 合成のいたるところでinfty<ll>/2以上にならないことを仮定くらいで大丈夫だと思う.
+// https://codeforces.com/contest/878/problem/E
+// https://contest.ucup.ac/contest/3426/problem/17272
 struct Monoid_Add_Divide {
   using value_type = tuple<ll, ll, ll>;
   using X = value_type;
