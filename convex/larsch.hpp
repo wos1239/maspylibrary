@@ -1,102 +1,133 @@
-#pragma once
-
-// https://noshi91.github.io/Library/algorithm/larsch.cpp.html
-template <class T>
+// 制約きつい https://codeforces.com/contest/2183/problem/H
+template <class T, class F>
 class LARSCH {
   struct reduce_row;
   struct reduce_col;
+  struct ColMap {
+    const ColMap* parent = nullptr;
+    const std::vector<int>* v = nullptr;
+
+    inline int map(int j) const {
+      int x = v ? (*v)[j] : j;
+      return parent ? parent->map(x) : x;
+    }
+  };
+
+  struct Eval {
+    const F* f = nullptr;
+    long long a = 1;  // row = a*i + b
+    long long b = 0;
+    const ColMap* cm = nullptr;
+
+    inline T operator()(int i, int j) const {
+      int ii = int(a * i + b);
+      int jj = cm ? cm->map(j) : j;
+      return (*f)(ii, jj);
+    }
+  };
 
   struct reduce_row {
     int n;
-    std::function<T(int, int)> f;
-    int cur_row;
-    int state;
+    Eval e;
+    int cur_row = 0;
+    int state = 0;
     std::unique_ptr<reduce_col> rec;
 
-    reduce_row(int n_) : n(n_), f(), cur_row(0), state(0), rec() {
-      const int m = n / 2;
-      if (m != 0) { rec = std::make_unique<reduce_col>(m); }
-    }
-
-    void set_f(std::function<T(int, int)> f_) {
-      f = f_;
-      if (rec) {
-        rec->set_f([&](int i, int j) -> T { return f(2 * i + 1, j); });
+    reduce_row(int n_, const Eval& e_) : n(n_), e(e_) {
+      int m = n / 2;
+      if (m) {
+        Eval eo = e;
+        eo.b = e.a + e.b;
+        eo.a = 2 * e.a;
+        rec = std::make_unique<reduce_col>(m, eo);
       }
     }
 
-    int get_argmin() {
-      const int cur_row_ = cur_row;
-      cur_row += 1;
-      if (cur_row_ % 2 == 0) {
-        const int prev_argmin = state;
-        const int next_argmin = [&]() {
-          if (cur_row_ + 1 == n) {
-            return n - 1;
-          } else {
-            return rec->get_argmin();
-          }
-        }();
-        state = next_argmin;
-        int ret = prev_argmin;
-        for (int j = prev_argmin + 1; j <= next_argmin; j += 1) {
-          if (f(cur_row_, ret) > f(cur_row_, j)) { ret = j; }
+    inline void reset() {
+      cur_row = 0;
+      state = 0;
+      if (rec) rec->reset();
+    }
+
+    inline int get_argmin() {
+      int i = cur_row++;
+      if ((i & 1) == 0) {
+        int prev = state;
+        int next = (i + 1 == n ? n - 1 : rec->get_argmin());
+        state = next;
+        int ret = prev;
+        for (int j = prev + 1; j <= next; ++j) {
+          if (e(i, ret) > e(i, j)) ret = j;
         }
         return ret;
       } else {
-        if (f(cur_row_, state) <= f(cur_row_, cur_row_)) {
-          return state;
-        } else {
-          return cur_row_;
-        }
+        return (e(i, state) <= e(i, i)) ? state : i;
       }
     }
   };
 
   struct reduce_col {
     int n;
-    std::function<T(int, int)> f;
-    int cur_row;
+    Eval e;
+    int cur_row = 0;
     std::vector<int> cols;
+    ColMap cm_here;
     reduce_row rec;
 
-    reduce_col(int n_) : n(n_), f(), cur_row(0), cols(), rec(n) {}
-
-    void set_f(std::function<T(int, int)> f_) {
-      f = f_;
-      rec.set_f([&](int i, int j) -> T { return f(i, cols[j]); });
+    reduce_col(int n_, const Eval& e_)
+        : n(n_),
+          e(e_),
+          cols(),
+          cm_here{e.cm, &cols},
+          rec(n_, Eval{e.f, e.a, e.b, &cm_here}) {
+      cols.reserve(n);
     }
 
-    int get_argmin() {
-      const int cur_row_ = cur_row;
-      cur_row += 1;
-      const auto cs = [&]() -> std::vector<int> {
-        if (cur_row_ == 0) {
-          return {{0}};
-        } else {
-          return {{2 * cur_row_ - 1, 2 * cur_row_}};
-        }
-      }();
-      for (const int j: cs) {
-        while ([&]() {
-          const int size = cols.size();
-          return size != cur_row_ && f(size - 1, cols.back()) > f(size - 1, j);
-        }()) {
+    inline void reset() {
+      cur_row = 0;
+      cols.clear();
+      rec.reset();
+    }
+
+    inline void push_col(int j, int i) {
+      while (!cols.empty()) {
+        int size = (int)cols.size();
+        if (size == i) break;
+        int last = cols.back();
+        if (e(size - 1, last) > e(size - 1, j))
           cols.pop_back();
-        }
-        if (int(cols.size()) != n) { cols.push_back(j); }
+        else
+          break;
+      }
+      if ((int)cols.size() != n) cols.push_back(j);
+    }
+
+    inline int get_argmin() {
+      int i = cur_row++;
+      if (i == 0) {
+        cols.clear();
+        cols.push_back(0);
+      } else {
+        push_col(2 * i - 1, i);
+        push_col(2 * i, i);
       }
       return cols[rec.get_argmin()];
     }
   };
 
-  std::unique_ptr<reduce_row> base;
+  F f_;
+  ColMap root_cm_;
+  Eval root_eval_;
+  std::unique_ptr<reduce_row> base_;
 
-public:
-  LARSCH(int n, std::function<T(int, int)> f)
-      : base(std::make_unique<reduce_row>(n)) {
-    base->set_f(f);
+ public:
+  explicit LARSCH(int n, F f)
+      : f_(std::move(f)),
+        root_cm_{nullptr, nullptr},
+        root_eval_{&f_, 1, 0, &root_cm_} {
+    base_ = std::make_unique<reduce_row>(n, root_eval_);
   }
 
-  int get_argmin() { return base->get_argmin(); }
+  inline void reset() { base_->reset(); }
+  inline int get_argmin() { return base_->get_argmin(); }
 };
