@@ -40,11 +40,12 @@ template <typename T, typename F>
 vc<T> monge_shortest_path(int N, F f) {
   vc<T> dp(N + 1, infty<T>);
   dp[0] = 0;
-  LARSCH<T> larsch(N, [&](int i, int j) -> T {
+  auto g = [&](int i, int j) -> T {
     ++i;
     if (i <= j) return infty<T>;
     return dp[j] + f(j, i);
-  });
+  };
+  LARSCH<T, decltype(g)> larsch(N, g);
   FOR(r, 1, N + 1) {
     int l = larsch.get_argmin();
     dp[r] = dp[l] + f(l, r);
@@ -52,22 +53,52 @@ vc<T> monge_shortest_path(int N, F f) {
   return dp;
 }
 
-// https://noshi91.github.io/algorithm-encyclopedia/d-edge-shortest-path-monge
-// |f| の上限 f_lim も渡す
-// ・larsch が結構重いので、自前で dp できるならその方がよい
-// ・複数の d で計算するとき：同じ lambda
-// に対する計算をメモ化しておくと定数倍高速？ 　・ABC305
+// https://codeforces.com/contest/2183/problem/H
 template <typename T, typename F>
-T monge_shortest_path_d_edge(int N, int d, T f_lim, F f) {
-  assert(d <= N);
-  auto calc_L = [&](T lambda) -> T {
-    auto cost = [&](int frm, int to) -> T { return f(frm, to) + lambda; };
-    vc<T> dp = monge_shortest_path<T>(N, cost);
-    return dp[N] - lambda * d;
+T monge_shortest_path_d_edge(int N, int d, T flim, F f) {
+  assert(1 <= d && d <= N);
+  if (d == 1) return f(0, N);
+  if (d == N) {
+    T ans = 0;
+    FOR(i, N) ans += f(i, i + 1);
+    return ans;
+  }
+  if (d == 2) {
+    T ans = infty<T>;
+    FOR(i, 1, N) chmin(ans, f(0, i) + f(i, N));
+    return ans;
+  }
+
+  vc<pair<T, int>> dp(N + 1);
+  map<T, pair<T, int>> MP;
+  T ANS = -infty<T>;
+  auto calc = [&](T lambda) -> pair<T, int> {
+    if (MP.count(lambda)) return MP[lambda];
+    dp[0] = {0, 0};
+    auto eval = [&](int i, int j) -> T {
+      ++i;
+      if (i <= j) return infty<T>;
+      return dp[j].fi + f(j, i);
+    };
+    LARSCH<T, decltype(eval)> larsch(N, eval);
+
+    FOR(r, 1, N + 1) {
+      int l = larsch.get_argmin();
+      dp[r].fi = dp[l].fi + f(l, r) + lambda;
+      dp[r].se = dp[l].se + 1;
+    }
+    chmax(ANS, dp[N].fi - lambda * d);
+    return MP[lambda] = dp[N];
   };
 
-  auto [fx, x] = fibonacci_search<T, false>(calc_L, -3 * f_lim, 3 * f_lim + 1);
-  return fx;
+  T lo = -3 * flim - 10, hi = 3 * flim + 10;
+  while (lo + 1 < hi) {
+    T mi = (lo + hi) / 2;
+    int k = calc(mi).se;
+    if (k == d) break;
+    (k > d ? lo : hi) = mi;
+  }
+  return ANS;
 }
 
 // https://topcoder-g-hatena-ne-jp.jag-icpc.org/spaghetti_source/20120915/1347668163.html

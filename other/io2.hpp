@@ -70,7 +70,7 @@ ostream &operator<<(ostream &os, const vector<T> &A) {
 
 class CoutInitializer {
  public:
-  CoutInitializer() { std::cout << std::defaultfloat << std::setprecision(15); }
+  CoutInitializer() { std::cout << std::fixed << std::setprecision(15); }
 };
 static CoutInitializer cout_initializer;
 

@@ -5,13 +5,16 @@
 #include "random/base.hpp"
 
 // int
-int primitive_root(int p) {
+int primitive_root(int p, bool min = true) {
   auto pf = factor(p - 1);
   auto is_ok = [&](int g) -> bool {
-    for (auto&& [q, e]: pf)
+    for (auto&& [q, e] : pf)
       if (mod_pow(g, (p - 1) / q, p) == 1) return false;
     return true;
   };
+  if (min) {
+    FOR(x, 1, p) if (is_ok(x)) return x;
+  }
   while (1) {
     int x = RNG(1, p);
     if (is_ok(x)) return x;
@@ -22,7 +25,7 @@ int primitive_root(int p) {
 ll primitive_root_64(ll p) {
   auto pf = factor(p - 1);
   auto is_ok = [&](ll g) -> bool {
-    for (auto&& [q, e]: pf)
+    for (auto&& [q, e] : pf)
       if (mod_pow_64(g, (p - 1) / q, p) == 1) return false;
     return true;
   };

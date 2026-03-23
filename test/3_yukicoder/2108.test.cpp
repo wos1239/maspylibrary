@@ -24,7 +24,7 @@ void solve() {
 
   dp = transpose(dp);
 
-  FOR(N, LIM + 1) {
+  FOR(N, 1, LIM + 1) {
     mint pow_N = inv<mint>(N).pow(4);
     FOR(i, 1, N + 1) {
       pow_N *= mint(N * N);
