@@ -1,4 +1,5 @@
 // マルチテストケースに弱いので static で確保すること
+
 template <class Node>
 struct Node_Pool {
   struct Slot {

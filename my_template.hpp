@@ -1,11 +1,12 @@
+// Thanks maspy ~
+
 #if defined(LOCAL)
 #include <my_template_compiled.hpp>
 #else
-#if defined(__GNUC__)
-#include <bits/allocator.h>
-#pragma GCC optimize("Ofast,unroll-loops")
-#pragma GCC target("avx2,popcnt")
-#endif
+// #if defined(__GNUC__)
+// #pragma GCC optimize("Ofast,unroll-loops")
+// #pragma GCC target("avx2,popcnt")
+// #endif
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -52,9 +53,10 @@ using pq_max = priority_queue<T>;
 template <class T>
 using pq_min = priority_queue<T, vector<T>, greater<T>>;
 
+
 #define vv(type, name, h, ...) \
   vector<vector<type>> name(h, vector<type>(__VA_ARGS__))
-#define vvv(type, name, h, w, ...)   \
+#define vvv(type, name, h, w, ...) \
   vector<vector<vector<type>>> name( \
       h, vector<vector<type>>(w, vector<type>(__VA_ARGS__)))
 #define vvvv(type, name, a, b, c, ...)       \

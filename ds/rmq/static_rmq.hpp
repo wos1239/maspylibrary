@@ -2,6 +2,7 @@
 
 // 構築 O(N), クエリ O(1)
 // static_range_product より遅いっぽいので使うことはなさそうだ
+
 template <typename Monoid>
 struct Static_RMQ {
   using MX = Monoid;
@@ -38,8 +39,10 @@ struct Static_RMQ {
       if (i & 15) suf[i - 1] = MX::op(A[i - 1], suf[i]);
     }
     ST.build(b_num, [&](int i) -> X { return suf[i << LOG]; });
+
     // 長さ 16 以下のクエリに対応するための前計算
     // [i,i+16) 内で i+j が [i,i+j] での最小値となる場合に j-th bit を立てる
+
     dat.resize(N);
     u32 stack = 0;
     FOR_R(i, N) {

@@ -15,7 +15,7 @@ struct Pre {
     for (int i = 0; i < 10000; i++) {
       int n = i;
       for (int j = 3; j >= 0; j--) {
-        num[i][j] = n % 10 | '0';
+        num[i][j] = n % 10 | '0'; // '0' == 0x30
         n /= 10;
       }
     }
@@ -31,6 +31,9 @@ inline void load() {
 
 inline void flush() {
   fwrite(obuf, 1, por, stdout);
+#if defined(LOCAL)
+  fflush(stdout);
+#endif
   por = 0;
 }
 
@@ -227,7 +230,13 @@ void wt(const vector<T> &val) {
   }
 }
 
-void print() { wt('\n'); }
+void print() { 
+    wt('\n'); 
+#if defined(LOCAL)
+    flush();
+#endif
+}
+
 template <class Head, class... Tail>
 void print(Head &&head, Tail &&...tail) {
   wt(head);
@@ -312,3 +321,7 @@ void yes(bool t = 1) { print(t ? "yes" : "no"); }
 void no(bool t = 1) { yes(!t); }
 void YA(bool t = 1) { print(t ? "YA" : "TIDAK"); }
 void TIDAK(bool t = 1) { YA(!t); }
+void Alice(bool t = 1) { print(t ? "Alice" : "Bob"); }
+void Bob(bool t = 1) { YES(!t); }
+void ALICE(bool t = 1) { print(t ? "ALICE" : "BOB"); }
+void BOB(bool t = 1) { YES(!t); }

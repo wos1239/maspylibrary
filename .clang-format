@@ -1,5 +1,5 @@
 BasedOnStyle: Google
-IndentWidth: 2
+IndentWidth: 4
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true

@@ -101,6 +101,8 @@ struct Graph {
     }
   }
 
+  // [v] 获取以v为起点的所有边
+  
   OutgoingEdges operator[](int v) const {
     assert(prepared);
     return {this, indptr[v], indptr[v + 1]};

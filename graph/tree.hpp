@@ -9,9 +9,11 @@ struct Tree {
   GT &G;
   using WT = typename GT::cost_type;
   int N;
-  vector<int> LID, RID, head, V, parent, VtoE;
-  vc<int> depth;
-  vc<WT> depth_weighted;
+  vector<int> LID, V, RID;   // euler-tour 序区间 [LID, RID) & LID序列到节点逆映射 V[LID[i]] = i
+  vector<int> head;    // heavy-light 头节点 
+  vector<int> parent, VtoE; // 父节点 & 节点对应的边 id
+  vc<int> depth;          // 深度
+  vc<WT> depth_weighted;  // 带权重的深度
 
   Tree(GT &G, int r = 0, bool hld = 1) : G(G) { build(r, hld); }
 
@@ -63,6 +65,8 @@ struct Tree {
     }
   }
 
+  // 返回以v为起点的重链
+
   vc<int> heavy_path_at(int v) {
     vc<int> P = {v};
     while (1) {
@@ -99,6 +103,8 @@ struct Tree {
     return memo_tail[v];
   }
 
+  // 返回边中靠近叶子的节点
+
   int e_to_v(int eid) {
     auto e = G.edges[eid];
     return (parent[e.frm] == e.to ? e.frm : e.to);
@@ -123,6 +129,9 @@ struct Tree {
       v = parent[u];
     }
   }
+
+  // 没什么用
+
   int la(int u, int v) { return LA(u, v); }
 
   int LCA(int u, int v) {
@@ -132,8 +141,12 @@ struct Tree {
     }
   }
 
+  // meet 是三个点的交点，三个lca必有至少两个相等，另一个就是交点
+
   int meet(int a, int b, int c) { return LCA(a, b) ^ LCA(a, c) ^ LCA(b, c); }
   int lca(int u, int v) { return LCA(u, v); }
+
+  // 计算子树大小，可换根
 
   int subtree_size(int v, int root = -1) {
     if (root == -1) return RID[v] - LID[v];
@@ -143,10 +156,14 @@ struct Tree {
     return N - RID[x] + LID[x];
   }
 
+  // a到b的距离
+  
   int dist(int a, int b) {
     int c = LCA(a, b);
     return depth[a] + depth[b] - 2 * depth[c];
   }
+
+  // a到b带权的距离
 
   WT dist_weighted(int a, int b) {
     int c = LCA(a, b);
@@ -155,6 +172,8 @@ struct Tree {
 
   // a is in b
   bool in_subtree(int a, int b) { return LID[b] <= LID[a] && LID[a] < RID[b]; }
+
+  // 在 a→b 路径上移动 k 步。
 
   int jump(int a, int b, ll k) {
     if (k == 1) {
@@ -190,7 +209,9 @@ struct Tree {
   }
 
   vc<pair<int, int>> get_path_decomposition(int u, int v, bool edge) {
+
     // [始点, 終点] の"閉"区間列。
+    
     vc<pair<int, int>> up, down;
     while (1) {
       if (head[u] == head[v]) break;
@@ -254,8 +275,10 @@ struct Tree {
     return {x, x};
   }
 
+  // 在 u->v 路径上寻找最后一个满足 check 的节点，利用分解数组和二分查找。
   // uv path 上で check(v) を満たす最後の v
   // なければ （つまり check(v) が ng ）-1
+
   template <class F>
   int max_path(F check, int u, int v) {
     if (!check(u)) return -1;

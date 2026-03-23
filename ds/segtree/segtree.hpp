@@ -49,6 +49,8 @@ struct SegTree {
     while (i >>= 1) update(i);
   }
 
+  // prod 是 product 的缩写，代表乘积（幺半群的操作）
+
   X prod(int L, int R) {
     assert(0 <= L && L <= R && R <= n);
     X vl = Monoid::unit(), vr = Monoid::unit();

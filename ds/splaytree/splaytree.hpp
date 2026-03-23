@@ -2,6 +2,7 @@
 #include "ds/node_pool.hpp"
 
 // Node 型を別に定義して使う
+
 template <typename Node>
 struct SplayTree {
   Node_Pool<Node> pool;

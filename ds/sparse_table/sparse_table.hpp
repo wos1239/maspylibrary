@@ -1,6 +1,7 @@
 #pragma once
 
 // 冪等なモノイドであることを仮定。disjoint sparse table より x 倍高速
+
 template <class Monoid>
 struct Sparse_Table {
   using MX = Monoid;

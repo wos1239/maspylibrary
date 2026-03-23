@@ -1,3 +1,10 @@
+struct IoPreMain {
+    IoPreMain() { 
+        ios::sync_with_stdio(false);
+    }
+};
+IoPreMain __ioPreMain;
+
 #define INT(...)   \
   int __VA_ARGS__; \
   IN(__VA_ARGS__)
