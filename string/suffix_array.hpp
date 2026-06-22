@@ -5,7 +5,7 @@
 #include "ds/segtree/segtree.hpp"
 
 // 辞書順 i 番目の suffix が j 文字目始まりであるとき、
-// SA[i] = j, ISA[j] = i
+// SA[i] = j, ISA[j] = i ISA就是rank数组
 // |S|>0 を前提（そうでない場合 dummy 文字を追加して利用せよ）
 template <bool USE_SPARSE_TABLE = true>
 struct Suffix_Array {

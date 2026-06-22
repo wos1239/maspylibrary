@@ -35,7 +35,7 @@ REAL distance(Segment<T> S1, Segment<T> S2) {
 
 template <typename REAL, typename T>
 REAL distance(Point<T> P, Line<T> L) {
-  return abs(L.a * P.x + L.b * P.y + L.c) / sqrt(L.a * L.a + L.b * L.b);
+  return abs(L.a * P.x + L.b * P.y + L.c) / (REAL)sqrt(L.a * L.a + L.b * L.b);
 }
 
 // return: {a, b}. where dist=sqrt(a/b)

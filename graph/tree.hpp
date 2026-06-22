@@ -119,6 +119,7 @@ struct Tree {
   int ELID(int v) { return 2 * LID[v] - depth[v]; }
   int ERID(int v) { return 2 * RID[v] - depth[v] - 1; }
 
+  // v向root移动k步
   // 目標地点へ進む個数が k
   int LA(int v, int k) {
     assert(k <= depth[v]);
@@ -130,7 +131,7 @@ struct Tree {
     }
   }
 
-  // 没什么用
+  // 别名，没什么用
 
   int la(int u, int v) { return LA(u, v); }
 

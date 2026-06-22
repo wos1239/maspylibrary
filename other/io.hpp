@@ -149,6 +149,12 @@ void wt(const string &s) { wt_range(s.data(), s.size()); }
 
 template <typename T>
 void wt_integer(T x) {
+#if defined(LOCAL)
+    if(x == infty<T>){
+        wt("inf");
+        return;
+    }
+#endif
   if (por > SZ - 100) flush();
   if (x < 0) {
     obuf[por++] = '-', x = -x;

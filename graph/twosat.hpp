@@ -6,6 +6,7 @@ struct TwoSat {
   vc<pair<int, int>> edges;
 
   TwoSat(ll n) : G(n + n), values(n, -1) {}
+  // a或b为0时，似乎有问题
   void add(int a, int b) {
     a = (a >= 0 ? 2 * a + 1 : 2 * (~a));
     b = (b >= 0 ? 2 * b + 1 : 2 * (~b));

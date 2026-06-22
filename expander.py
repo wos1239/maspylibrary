@@ -2,7 +2,7 @@ import sys
 import os
 import re
 
-INCLUDE_PATHS = ['.', os.path.expanduser(
+INCLUDE_PATHS = ['.', './lib',os.path.expanduser(
     '~/compro/library'), os.path.expanduser('~/compro/other_library')]
 visited = set()
 
@@ -27,7 +27,7 @@ def expand_file(path, display_name=None, caller_file=None, caller_line=None):
     print(f'// BEGIN: {display_name}')
     print(f'#line 1 "{display_name}"')  # ファイルの冒頭で `#line` を入れる
 
-    with open(path) as f:
+    with open(path, encoding='utf-8') as f:
         for i, line in enumerate(f, start=1):
             if line.strip() == "#pragma once":
                 continue
@@ -51,8 +51,13 @@ def expand_file(path, display_name=None, caller_file=None, caller_line=None):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Usage: python3 expander.py main.cpp > singlefile.cpp")
         sys.exit(1)
 
-    expand_file(sys.argv[1])
+    sys.stdout.reconfigure(encoding='utf-8') 
+    of = open(sys.argv[1], 'w', encoding='utf-8')
+    sys.stdout = of
+    expand_file(sys.argv[2])
+    of.close()
+

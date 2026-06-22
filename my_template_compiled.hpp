@@ -67,10 +67,11 @@ using pq_min = priority_queue<T, vector<T>, greater<T>>;
 #define FOR1_R(a) for (ll i = (a) - 1; i >= ll(0); --i)
 #define FOR2_R(i, a) for (ll i = (a) - 1; i >= ll(0); --i)
 #define FOR3_R(i, a, b) for (ll i = (b) - 1; i >= ll(a); --i)
+#define FOR4_R(i, a, b, c) for (ll i = (b) - 1; i >= ll(a); i -= (c))
 #define overload4(a, b, c, d, e, ...) e
 #define overload3(a, b, c, d, ...) d
 #define FOR(...) overload4(__VA_ARGS__, FOR4, FOR3, FOR2, FOR1)(__VA_ARGS__)
-#define FOR_R(...) overload3(__VA_ARGS__, FOR3_R, FOR2_R, FOR1_R)(__VA_ARGS__)
+#define FOR_R(...) overload4(__VA_ARGS__, FOR4_R, FOR3_R, FOR2_R, FOR1_R)(__VA_ARGS__)
 
 #define all(x) (x).begin(), (x).end()
 #define len(x) ll(x.size())
@@ -212,6 +213,12 @@ template <typename T>
 T POP(deque<T> &que) {
   T a = que.front();
   que.pop_front();
+  return a;
+}
+template <typename T>
+T POP(queue<T> &que) {
+  T a = que.front();
+  que.pop();
   return a;
 }
 template <class T, class Container, class Compare>

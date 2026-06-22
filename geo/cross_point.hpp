@@ -83,6 +83,7 @@ vc<Point<REAL>> cross_point(const Circle<T> C, const Line<T> L) {
   return {Point<REAL>(x1, y1), Point<REAL>(x2, y2)};
 }
 
+// 余弦定理求两圆交点
 // https://codeforces.com/contest/2/problem/C
 template <typename REAL, typename T>
 tuple<bool, Point<T>, Point<T>> cross_point_circle(Circle<T> C1, Circle<T> C2) {
